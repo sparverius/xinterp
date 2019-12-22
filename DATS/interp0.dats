@@ -72,11 +72,17 @@ UN = "prelude/SATS/unsafe.sats"
 //
 #staload "./../SATS/intrep0.sats"
 #staload "./../SATS/interp0.sats"
+#staload "./../SATS/intrep0_jsonize.sats"
+#staload "./../SATS/interp0_jsonize.sats"
 //
 (* ****** ****** *)
 
 #staload
 _(*TMP*) = "./intrep0_print.dats"
+#staload
+_ = "./intrep0_jsonize.dats"
+#staload
+_ = "./interp0_jsonize.dats"
 
 (* ****** ****** *)
 //
@@ -835,6 +841,12 @@ irdcls = irerase_declist(d3cs)
 val () =
 println!
 ("process_fpath: irdcls = ", irdcls)
+//
+
+val json = jsonize(irdcls)
+val json = jsonval_labval1(json.0, json.1)
+val () = println!("jsonized(irdcls)", "\n", json)
+
 //
 val () =
 interp0_program(irdcls)

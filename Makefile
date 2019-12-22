@@ -37,6 +37,9 @@ LIBGC=-lgc
 SRCSATS := \
 intrep0.sats \
 interp0.sats \
+intrep0_jsonize.sats \
+interp0_jsonize.sats \
+
 
 SRCDATS := \
 intrep0.dats \
@@ -46,6 +49,9 @@ interp0.dats \
 interp0_print.dats \
 interp0_envmap.dats \
 interp0_dynexp.dats \
+intrep0_jsonize.dats \
+interp0_jsonize.dats \
+
 
 ######
 
