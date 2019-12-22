@@ -56,11 +56,15 @@ $(patsubst %.dats, BUILD/%_dats.o, $(SRCDATS))
 
 ######
 
+XATSHOMEQ=./../xanadu/
+XATSQ=./../xanadu/srcgen/xats
+XJSONQ=./../xjsonize
+
 INCLUDE:=
 INCLUDE+=-I"."
-INCLUDE+=-I"./../xanadu/srcgen/xats"
-LIBRARY:=-L"./../xanadu/lib" -lxatsopt
-LIBRARY+=-L"./../xjsonize/lib" -lxjsonize
+INCLUDE+=-I$(XATSQ)
+LIBRARY:=-L"$(XATSHOMEQ)/lib" -lxatsopt
+LIBRARY+=-L"$(XJSONQ)/lib" -lxjsonize
 
 ######
 #
@@ -153,8 +157,8 @@ clean:: ; $(RMF) xinterp_dats.c
 
 cleanall:: clean
 cleanall:: ; $(RMF) ./bin/xinterp
-cleanall:: ; $(RMF) ./xanadu/lib/libxatsopt.a
-cleanall:: ; $(MAKE) -C ./xanadu/srcgen/xats cleanall
+# cleanall:: ; $(RMF) $(XATSHOMEQ)/lib/libxatsopt.a
+# cleanall:: ; $(MAKE) -C $(XATSQ) cleanall
 
 ######
 
