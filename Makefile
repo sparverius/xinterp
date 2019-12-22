@@ -58,8 +58,9 @@ $(patsubst %.dats, BUILD/%_dats.o, $(SRCDATS))
 
 INCLUDE:=
 INCLUDE+=-I"."
-INCLUDE+=-I"./xanadu/srcgen/xats"
-LIBRARY:=-L"./xanadu/lib" -lxatsopt
+INCLUDE+=-I"./../xanadu/srcgen/xats"
+LIBRARY:=-L"./../xanadu/lib" -lxatsopt
+LIBRARY+=-L"./../xjsonize/lib" -lxjsonize
 
 ######
 #
@@ -74,7 +75,7 @@ $(INCLUDE) $(CFLAGS) $(GCFLAG) $^ $(LIBGC) $(LIBRARY)
 ######
 
 libxatsopt: ; \
-(cd ./xanadu/srcgen/xats && $(MAKE) libxatsopt)
+(cd ./../xanadu/srcgen/xats && $(MAKE) libxatsopt)
 
 ######
 

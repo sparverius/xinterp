@@ -13,12 +13,12 @@
 ** the terms of  the GNU GENERAL PUBLIC LICENSE (GPL) as published by the
 ** Free Software Foundation; either version 3, or (at  your  option)  any
 ** later version.
-** 
+**
 ** ATS is distributed in the hope that it will be useful, but WITHOUT ANY
 ** WARRANTY; without  even  the  implied  warranty  of MERCHANTABILITY or
 ** FITNESS FOR A PARTICULAR PURPOSE.  See the  GNU General Public License
 ** for more details.
-** 
+**
 ** You  should  have  received  a  copy of the GNU General Public License
 ** along  with  ATS;  see the  file COPYING.  If not, please write to the
 ** Free Software Foundation,  51 Franklin Street, Fifth Floor, Boston, MA
@@ -42,8 +42,14 @@
 extern
 void
 libxatsopt_dynloadall();
+extern
+void
+libxjsonize_dynloadall();
 //
 %} (* %{^ *)
+val () =
+$extfcall
+(void, "libxjsonize_dynloadall")
 val () =
 $extfcall
 (void, "libxatsopt_dynloadall")
@@ -59,6 +65,8 @@ UN = "prelude/SATS/unsafe.sats"
 //
 #include
 "./../HATS/libxatsopt.hats"
+#include
+"./../HATS/libxjsonize.hats"
 //
 (* ****** ****** *)
 //
@@ -110,7 +118,7 @@ loop
 {n,i:nat|i <= n} .<n-i>.
 (
   inp: string n, n: int n, i: int i
-) :<> commarg = 
+) :<> commarg =
 (
 if
 (i < n)
@@ -119,7 +127,7 @@ if (inp[i] != '-')
   then COMMARG(i, inp) else loop(inp, n, i+1)
 ) else COMMARG(n, inp)
 // end of [if]
-) (* end of [if] *)  
+) (* end of [if] *)
 // end of [loop]
 //
 in
@@ -738,7 +746,7 @@ println!
 *)
 //
 val
-d2cs = 
+d2cs =
 let
 val
 d2cs = trans12_declist(d1cs)
@@ -1245,7 +1253,7 @@ val
 XATSHOME =
 $GLO.the_XATSHOME_get((*void*))
 //
-val () = 
+val () =
 $FP0.the_includes_push(XATSHOME)
 //
 val+

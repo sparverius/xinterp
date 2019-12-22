@@ -1,8 +1,6 @@
 (* ****** ****** *)
 
-#define
-XANADU_targetloc
-"./../xanadu/srcgen/xats"
+#include "./x.hats"
 
 (* ****** ****** *)
 //
@@ -128,4 +126,3 @@ _(*TMP*) =
 (* ****** ****** *)
 
 (* end of [libxatsopt.hats] *)
-
