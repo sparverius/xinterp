@@ -119,8 +119,21 @@ case+ x0 of
 | IR0LVref(r0) =>
   jsonify("IR0LVref", jsonify("ref", jsonify("...")))
   (* where val _ = $showtype(ref_get_ptr(r0)) end *)
+(*
 | IR0LVproj(x1, lab, idx) =>
   jsonify("IR0LVproj", jsonize(x1), jsonize(lab), jsonize(idx))
+*)
+| IR0LVpcon
+  (x1, lab) =>
+  jsonify("IR0LVpcon", jsonize(x1), jsonize(lab))
+//
+| IR0LVpbox
+  (x1, lab, idx) =>
+  jsonify("IR0LVpbox", jsonize(x1), jsonize(lab), jsonize(idx))
+| IR0LVpflt
+  (x1, lab, idx) =>
+  jsonify("IR0LVpflt", jsonize(x1), jsonize(lab), jsonize(idx))
+
 ) : labjsonval
 end
 //

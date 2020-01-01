@@ -99,6 +99,11 @@ case+ x0.node() of
 | IR0Pnone1(d3p) =>
   jsonify("IR0Pnone1", jsonize(d3p))
 //
+| IR0Pflat(d) =>
+  jsonify("IR0Pflat", jsonize(d))
+| IR0Pfree(d) =>
+  jsonify("IR0Pfree", jsonize(d))
+
 ) : labjsonval
 end  // end of [jsonize_ir0pat]
 
@@ -208,8 +213,12 @@ x0.node() of
 | IR0Enone0() =>
   jsonify("IR0Enone0")
 | IR0Enone1(d3e1) =>
-  jsonify("IR0Enone1") //, d3e1, ")")
+  jsonify("IR0Enone1", jsonize(d3e1))
 //
+| IR0Etop(p) =>
+  jsonify("IR0Etop", jsonize(p))
+| IR0Epcon(p1, p2) =>
+  jsonify("IR0Epcon", jsonize(p1), jsonize(p2))
 ) : labjsonval
 end // end of [jsonize_ir0exp]
 
