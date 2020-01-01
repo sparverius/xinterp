@@ -148,7 +148,12 @@ ir0val =
 and
 ir0lftval =
 | IR0LVref of ref(ir0valopt)
-| IR0LVproj of
+//
+| IR0LVpcon of (ir0val, label)
+//
+| IR0LVpbox of
+  (ir0val, label, int(*index*))
+| IR0LVpflt of
   (ir0lftval, label, int(*index*))
 //
 and
@@ -235,7 +240,9 @@ intpenv_free_fenv(env: intpenv): void
 
 fun
 interp0_search_d2cst
-(d2c: d2cst): Option_vt(ir0val)
+( env
+: !intpenv
+, d2c: d2cst): Option_vt(ir0val)
 fun
 interp0_search_d2var
 ( env
@@ -246,7 +253,9 @@ interp0_search_d2var
 //
 fun
 interp0_insert_d2cst
-(d2c: d2cst, irv: ir0val): void
+( env
+: !intpenv
+, d2c: d2cst, irv: ir0val): void
 //
 fun
 interp0_insert_d2var

@@ -171,6 +171,9 @@ ir0pat_node =
 //
 | IR0Pvar of (d2var)
 //
+| IR0Pflat of (ir0pat)
+| IR0Pfree of (ir0pat)
+//
 | IR0Pcapp of (d2con, ir0patlst)
 //
 | IR0Ptuple of (int(*knd*), ir0patlst)
@@ -244,6 +247,8 @@ ir0exp_node =
 | IR0Ebtf of (token)
 | IR0Estr of (token)
 //
+| IR0Etop of (token)
+//
 | IR0Evar of (d2var)
 //
 | IR0Econ1 of (d2con)
@@ -262,8 +267,10 @@ ir0exp_node =
   ( ir0exp
   , int(*npf*), ir0explst)
 //
+| IR0Epcon of
+  ( ir0exp, label(*proj*))
 | IR0Eproj of
-  ( ir0exp(*rcd*)
+  ( ir0exp//rcd
   , label(*proj*), int(*index*))
 //
 | IR0Elet of (ir0dclist, ir0exp)

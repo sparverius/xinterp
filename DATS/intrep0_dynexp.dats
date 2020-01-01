@@ -55,10 +55,58 @@ UN = "prelude/SATS/unsafe.sats"
 local
 
 fun
+auxflat
+( d3p0
+: d3pat): ir0pat =
+let
+//
+val
+loc0 = d3p0.loc()
+//
+val-
+D3Pflat
+(d3p1) = d3p0.node()
+//
+val
+irp1 = irerase_dpat(d3p1)
+//
+in
+ir0pat_make_node(loc0, IR0Pflat(irp1))
+end // end of [auxflat]
+
+fun
+auxfree
+( d3p0
+: d3pat): ir0pat =
+let
+//
+val
+loc0 = d3p0.loc()
+//
+val-
+D3Pfree
+(d3p1) = d3p0.node()
+//
+val
+irp1 = irerase_dpat(d3p1)
+//
+in
+ir0pat_make_node(loc0, IR0Pfree(irp1))
+end // end of [auxfree]
+
+(* ****** ****** *)
+
+fun
 auxdapp
 ( d3p0
 : d3pat): ir0pat =
 let
+//
+val () =
+println!
+("\
+auxdapp: \
+d3p0 = ", d3p0)
 //
 val
 loc0 = d3p0.loc()
@@ -193,6 +241,9 @@ d3p0.node() of
 | D3Pvar(d2v) =>
   ir0pat_make_node(loc0, IR0Pvar(d2v))
 //
+| D3Pflat _ => auxflat(d3p0)
+| D3Pfree _ => auxfree(d3p0)
+//
 | D3Pdapp _ => auxdapp(d3p0)
 //
 | D3Ptuple _ => aux_tuple(d3p0)
@@ -285,6 +336,10 @@ d3e0.node() of
   ir0exp_make_node
   (loc0, IR0Estr(tok))
 //
+| D3Etop(tok) =>
+  ir0exp_make_node
+  (loc0, IR0Etop(tok))
+//
 | D3Evar(d2v) =>
   ir0exp_make_node
   (loc0, IR0Evar(d2v))
@@ -328,6 +383,15 @@ d3e0.node() of
     , IR0Edapp(irf0, npf1, ires))
   end
 //
+| D3Epcon
+  (d3e1, lab2) => let
+    val
+    ire1 = irerase_dexp(d3e1)
+  in
+    ir0exp_make_node
+      (loc0, IR0Epcon(ire1, lab2))
+    // ir0exp_make_node
+  end
 | D3Eproj
   (d3e1, lab2, idx2) => let
     val
@@ -471,6 +535,12 @@ d3e0.node() of
   in
     ir0exp_make_node(loc0, IR0Eaddr(ire1))
   end // end of [D3Eaddr]
+| D3Efold(d3e1) =>
+  let
+    val ire1 = irerase_dexp(d3e1)
+  in
+    ir0exp_make_node(loc0, IR0Efold(ire1))
+  end // end of [D3Eaddr]
 //
 | D3Elazy(d3e1) =>
   let
@@ -484,7 +554,7 @@ d3e0.node() of
     val opt2 = irerase_dexpopt(opt2)
   in
     ir0exp_make_node(loc0, IR0Ellazy(ire1, opt2))
-  end // end of [D3Elazy]
+  end // end of [D3Ellazy]
 //
 | D3Eflat(d3e1) =>
   let
