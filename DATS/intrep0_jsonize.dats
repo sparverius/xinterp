@@ -33,15 +33,15 @@ jsonize_val<ir0arg> = jsonize_ir0arg
 
 
 implement
-jsonize_ir0patlst(x) = jsonize_list<ir0pat>("ir0patlst", x)
+jsonize_ir0patlst(x) = jsonize_list_named<ir0pat>("ir0patlst", x)
 implement
-jsonize_ir0dclist(x) = jsonize_list<ir0dcl>("ir0dclist", x)
+jsonize_ir0dclist(x) = jsonize_list_named<ir0dcl>("ir0dclist", x)
 implement
-jsonize_ir0explst(x) = jsonize_list<ir0exp>("ir0explst", x)
+jsonize_ir0explst(x) = jsonize_list_named<ir0exp>("ir0explst", x)
 implement
-jsonize_ir0expopt(x) = jsonize_option<ir0exp>("ir0expopt", x)
+jsonize_ir0expopt(x) = jsonize_option_named<ir0exp>("ir0expopt", x)
 implement
-jsonize_ir0arglst(x) = jsonize_list<ir0arg>("ir0arglst", x)
+jsonize_ir0arglst(x) = jsonize_list_named<ir0arg>("ir0arglst", x)
 
 implement
 jsonize_val<ir0fundecl> = jsonize_ir0fundecl
@@ -56,16 +56,16 @@ jsonize_val<ir0gua> = jsonize_ir0gua
 
 
 implement
-jsonize_ir0valdeclist(x) = jsonize_list<ir0valdecl>("ir0valdeclist", x)
+jsonize_ir0valdeclist(x) = jsonize_list_named<ir0valdecl>("ir0valdeclist", x)
 implement
-jsonize_ir0vardeclist(x) = jsonize_list<ir0vardecl>("ir0vardeclist", x)
+jsonize_ir0vardeclist(x) = jsonize_list_named<ir0vardecl>("ir0vardeclist", x)
 implement
-jsonize_ir0fundeclist(x) = jsonize_list<ir0fundecl>("ir0fundeclist", x)
+jsonize_ir0fundeclist(x) = jsonize_list_named<ir0fundecl>("ir0fundeclist", x)
 
 implement
-jsonize_ir0claulst(x) = jsonize_list<ir0clau>("ir0claulst", x)
+jsonize_ir0claulst(x) = jsonize_list_named<ir0clau>("ir0claulst", x)
 implement
-jsonize_ir0gualst(x) = jsonize_list<ir0gua>("ir0gualst", x)
+jsonize_ir0gualst(x) = jsonize_list_named<ir0gua>("ir0gualst", x)
 
 
 implement

@@ -65,12 +65,15 @@ $(patsubst %.dats, BUILD/%_dats.o, $(SRCDATS))
 XATSHOMEQ=./../xanadu/
 XATSQ=./../xanadu/srcgen/xats
 XJSONQ=./../xjsonize
-
+XARGSQ=./../xargsof
+XNAMEQ=./../xnameof
 
 INCLUDE:=
 INCLUDE+=-I"."
 INCLUDE+=-I$(XATSQ)
 LIBRARY:=-L"$(XATSHOMEQ)/lib" -lxatsopt
+LIBRARY+=-L"$(XARGSQ)/lib" -lxargsof
+LIBRARY+=-L"$(XNAMEQ)/lib" -lxnameof
 LIBRARY+=-L"$(XJSONQ)/lib" -lxjsonize
 
 ######

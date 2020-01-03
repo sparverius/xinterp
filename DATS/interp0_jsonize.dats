@@ -35,7 +35,7 @@ jsonize_val<ir0exp> = jsonize_ir0exp
 //
 
 implement jsonize_ir0valist(x) =
-  jsonize_list<ir0val>("ir0valist", x)
+  jsonize_list_named<ir0val>("ir0valist", x)
 
 (* ****** ****** *)
 //

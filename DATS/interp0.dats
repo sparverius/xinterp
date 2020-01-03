@@ -44,9 +44,21 @@ void
 libxatsopt_dynloadall();
 extern
 void
+libxnameof_dynloadall();
+extern
+void
+libxargsof_dynloadall();
+extern
+void
 libxjsonize_dynloadall();
 //
 %} (* %{^ *)
+val () =
+$extfcall
+(void, "libxnameof_dynloadall")
+val () =
+$extfcall
+(void, "libxargsof_dynloadall")
 val () =
 $extfcall
 (void, "libxjsonize_dynloadall")
