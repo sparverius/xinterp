@@ -625,6 +625,17 @@ fprintln!
 //
 (* ****** ****** *)
 
+macdef output_json(name, lst) =
+{
+val fname0 = ,(name)
+val filp0 = $STDIO.fopen(fname0, file_mode_w)
+val filr0 = $UN.castvwtp0{FILEref}(filp0)
+val j0 = jsonize(,(lst))
+val json = jsonval_labval1(j0.0, j0.1)
+val () = fprint!(filr0, json)
+val err = $STDIO.fclose0(filr0)
+}
+
 local
 //
 static
@@ -855,9 +866,12 @@ println!
 ("process_fpath: irdcls = ", irdcls)
 //
 
+val () = output_json("./out/irdcls.json", irdcls)
+(*
 val json = jsonize(irdcls)
 val json = jsonval_labval1(json.0, json.1)
 val () = println!("jsonized(irdcls)", "\n", json)
+*)
 
 //
 val () =
