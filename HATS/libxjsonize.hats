@@ -2,6 +2,9 @@
 
 #include "./x.hats"
 
+#ifndef XJSON_LIB
+#define XJSON_LIB
+
 (* ****** ****** *)
 
 #staload "{$XJSON}/SATS/json.sats"
@@ -73,5 +76,7 @@
 #staload _ = "{$XJSON}/DATS/dynexp3.dats"
 
 #staload _ = "{$XJSON}/DATS/jsonize0.dats"
+
+#endif
 
 (* end of [libxjsonize.hats] *)

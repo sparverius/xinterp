@@ -2,6 +2,9 @@
 
 #include "./x.hats"
 
+#ifndef XATSOPT_LIB
+#define XATSOPT_LIB
+
 (* ****** ****** *)
 //
 #staload
@@ -124,5 +127,7 @@ _(*TMP*) =
 "{$XANADU}/DATS/trans12_envmap.dats"
 //
 (* ****** ****** *)
+
+#endif
 
 (* end of [libxatsopt.hats] *)
