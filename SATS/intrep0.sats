@@ -246,6 +246,8 @@ ir0exp_node =
 | IR0Eint of (token)
 | IR0Ebtf of (token)
 | IR0Estr of (token)
+| IR0Echr of (token)
+| IR0Eflt of (token)
 //
 | IR0Etop of (token)
 //

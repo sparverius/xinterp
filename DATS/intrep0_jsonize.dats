@@ -116,7 +116,7 @@ let
 in
 node("ir0arg", res) where
 val res =
-  jsonify("IR0ARGsome", tagged("npf", npf), jsonize(irps)) : labjsonval
+  jsonify("IR0ARGsome", jsonize(npf), jsonize(irps)) : labjsonval
 end
 end // end of [jsonize_ir0arg]
 
@@ -139,6 +139,10 @@ x0.node() of
 *)
 | IR0Estr(tok) =>
   jsonify("IR0Estr", jsonize(tok))
+| IR0Eflt(tok) =>
+  jsonify("IR0Eflt", jsonize(tok))
+| IR0Echr(tok) =>
+  jsonify("IR0Echr", jsonize(tok))
 //
 | IR0Evar(d2v) =>
   jsonify("IR0Evar", jsonize(d2v))
@@ -164,7 +168,7 @@ x0.node() of
   )
 //
 | IR0Edapp(irf0, npf1, ires) =>
-  jsonify("IR0Edapp", jsonize(irf0), tagged("npf", npf1), jsonize(ires))
+  jsonify("IR0Edapp", jsonize(irf0), jsonize(npf1), jsonize(ires))
 //
 | IR0Eproj(ire1, lab2, idx2) =>
   jsonify("IR0Eproj", jsonize(ire1), jsonize(lab2), jsonize(idx2))
@@ -177,7 +181,7 @@ x0.node() of
 | IR0Eseqn(ires, ire1) =>
   jsonify("IR0Eseqn", jsonize(ires), jsonize(ire1))
 | IR0Etuple(knd0, npf1, ires) =>
-  jsonify("IR0Etuple", jsonize(knd0), tagged("npf", npf1), jsonize(ires))
+  jsonify("IR0Etuple", jsonize(knd0), jsonize(npf1), jsonize(ires))
 | IR0Eassgn(irel, irer) =>
   jsonify("IR0Eassgn", jsonize(irel), jsonize(irer))
 //
@@ -301,7 +305,7 @@ case+ x0.node() of
     val jbody = (
       case+ body of
       | Some(x) => jsonize(x)
-      | None() => jsonify("None")
+      | None() => @("node", JSONlist(list_nil()))
     ) : labjsonval
     end
 //
@@ -368,7 +372,7 @@ node("ir0valdecl", res) where
 val res =
   jsonify("IR0VALDECL", jsonize(rcd.pat),
     (case+ rcd.def of
-      | None() => jsonize("None")
+      | None() => @("node", JSONlist(list_nil()))
       | Some(x) => jsonize(x)
     )) : labjsonval
 end
@@ -394,15 +398,16 @@ val res =
     jdef
   ) : labjsonval
   where
-    val ja3g = (
+    val ja3g =
+    (
       case+ rcd.a3g of
-      | None() => jsonify("None") //JSONlist(list_nil())
+      | None() => @("node", JSONlist(list_nil()))
       | Some(x) => jsonize(x)
       (* jsonize_list<f2arg>(rcd.a2g) *)
     ) : labjsonval
     val jdef = (
       case+ rcd.def of
-      | None() => jsonify("None")
+      | None() => @("node", JSONlist(list_nil()))
       | Some(x) => jsonize(x)
       (* jsonize_list<f2arg>(rcd.a2g) *)
     ) : labjsonval

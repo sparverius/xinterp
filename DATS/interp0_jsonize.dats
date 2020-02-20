@@ -74,7 +74,7 @@ case+ x0 of
   jsonify("IR0Vtuple", jsonize(knd), jsonize(irvs))
 //
 | IR0Vlam(fenv, iras, ire1) =>
-  jsonify("IR0Vlam", jsonize("fenv"),
+  jsonify("IR0Vlam", jsonize("..."),
     jsonize(iras),
     jsonize(ire1)
   )
@@ -117,7 +117,7 @@ val res =
 (
 case+ x0 of
 | IR0LVref(r0) =>
-  jsonify("IR0LVref", jsonify("ref", jsonify("...")))
+  jsonify("IR0LVref", jsonize("..."))
   (* where val _ = $showtype(ref_get_ptr(r0)) end *)
 (*
 | IR0LVproj(x1, lab, idx) =>

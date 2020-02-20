@@ -13,12 +13,12 @@
 ** the terms of  the GNU GENERAL PUBLIC LICENSE (GPL) as published by the
 ** Free Software Foundation; either version 3, or (at  your  option)  any
 ** later version.
-** 
+**
 ** ATS is distributed in the hope that it will be useful, but WITHOUT ANY
 ** WARRANTY; without  even  the  implied  warranty  of MERCHANTABILITY or
 ** FITNESS FOR A PARTICULAR PURPOSE.  See the  GNU General Public License
 ** for more details.
-** 
+**
 ** You  should  have  received  a  copy of the GNU General Public License
 ** along  with  ATS;  see the  file COPYING.  If not, please write to the
 ** Free Software Foundation,  51 Franklin Street, Fifth Floor, Boston, MA
@@ -289,7 +289,7 @@ list_cons
 (f3a0, f3as) =>
 (
 case+
-f3a0.node() of 
+f3a0.node() of
 //
 | F3ARGsome_dyn
     (npf, d3ps) =>
@@ -332,6 +332,10 @@ d3e0.node() of
 | D3Ebtf(tok) =>
   ir0exp_make_node
   (loc0, IR0Ebtf(tok))
+| D3Echr(tok) =>
+  ir0exp_make_node(loc0, IR0Echr(tok))
+| D3Eflt(tok) =>
+  ir0exp_make_node(loc0, IR0Eflt(tok))
 | D3Estr(tok) =>
   ir0exp_make_node
   (loc0, IR0Estr(tok))

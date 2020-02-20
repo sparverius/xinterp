@@ -115,33 +115,24 @@ ir0val =
 //
 | IR0Vlft of ir0lftval
 //
-| IR0Vcon of
-    (d2con, ir0valist)
+| IR0Vcon of (d2con, ir0valist)
 //
 | IR0Vfun of ir0valfun
 //
-| IR0Vtuple of
-  (int(*knd*), ir0valist)
+| IR0Vtuple of (int(*knd*), ir0valist)
 //
-| IR0Vlam of
-  (ir0env, ir0arglst, ir0exp)
-| IR0Vfix of
-  (ir0env, d2var, ir0arglst, ir0exp)
+| IR0Vlam of (ir0env, ir0arglst, ir0exp)
+| IR0Vfix of (ir0env, d2var, ir0arglst, ir0exp)
 (*
 | IR0Vfix2 of
   ( ir0env
   , d2var(*f*)
   , ir0arglst, ir0exp, ir0exp)
 *)
-| IR0Vfixs of
-  ( ir0env
-  , d2var(*f*)
-  , ir0arglst, ir0exp, ir0explst)
+| IR0Vfixs of (ir0env, d2var(*f*), ir0arglst, ir0exp, ir0explst)
 //
 | IR0Vlazy of ref(ir0lazval)
-| IR0Vllazy of
-  ( ir0env
-  , ir0exp(*eval*), ir0expopt(*free*))
+| IR0Vllazy of (ir0env, ir0exp(*eval*), ir0expopt(*free*))
 //
 | IR0Vnone0 of () | IR0Vnone1 of (ir0exp)
 //
@@ -151,10 +142,8 @@ ir0lftval =
 //
 | IR0LVpcon of (ir0val, label)
 //
-| IR0LVpbox of
-  (ir0val, label, int(*index*))
-| IR0LVpflt of
-  (ir0lftval, label, int(*index*))
+| IR0LVpbox of (ir0val, label, int(*index*))
+| IR0LVpflt of (ir0lftval, label, int(*index*))
 //
 and
 ir0lazval =

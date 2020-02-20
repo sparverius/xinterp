@@ -19,11 +19,11 @@ PATSOPT=$(PATSHOME)/bin/patsopt
 
 ######
 #
-CFLAGS=
+# CFLAGS=
 #
 # CFLAGS=-g
 # CFLAGS=-g -O
-# CFLAGS=-g -O2
+CFLAGS=-g -O2
 #
 GCFLAG=
 GCFLAG=-DATS_MEMALLOC_LIBC
@@ -75,6 +75,8 @@ LIBRARY:=-L"$(XATSHOMEQ)/lib" -lxatsopt
 LIBRARY+=-L"$(XARGSQ)/lib" -lxargsof
 LIBRARY+=-L"$(XNAMEQ)/lib" -lxnameof
 LIBRARY+=-L"$(XJSONQ)/lib" -lxjsonize
+
+.SECONDARY:
 
 ######
 #

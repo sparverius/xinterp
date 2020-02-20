@@ -13,12 +13,12 @@
 ** the terms of  the GNU GENERAL PUBLIC LICENSE (GPL) as published by the
 ** Free Software Foundation; either version 3, or (at  your  option)  any
 ** later version.
-** 
+**
 ** ATS is distributed in the hope that it will be useful, but WITHOUT ANY
 ** WARRANTY; without  even  the  implied  warranty  of MERCHANTABILITY or
 ** FITNESS FOR A PARTICULAR PURPOSE.  See the  GNU General Public License
 ** for more details.
-** 
+**
 ** You  should  have  received  a  copy of the GNU General Public License
 ** along  with  ATS;  see the  file COPYING.  If not, please write to the
 ** Free Software Foundation,  51 Franklin Street, Fifth Floor, Boston, MA
@@ -215,10 +215,10 @@ x0.node() of
   fprint!(out, "IR0Eint(", tok, ")")
 | IR0Ebtf(tok) =>
   fprint!(out, "IR0Ebtf(", tok, ")")
-(*
 | IR0Eflt(tok) =>
   fprint!(out, "IR0Eflt(", tok, ")")
-*)
+| IR0Echr(tok) =>
+  fprint!(out, "IR0Echr(", tok, ")")
 | IR0Estr(tok) =>
   fprint!(out, "IR0Estr(", tok, ")")
 //
