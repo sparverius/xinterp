@@ -215,10 +215,12 @@ x0.node() of
   fprint!(out, "IR0Eint(", tok, ")")
 | IR0Ebtf(tok) =>
   fprint!(out, "IR0Ebtf(", tok, ")")
-| IR0Eflt(tok) =>
-  fprint!(out, "IR0Eflt(", tok, ")")
+(* | IR0Echr(tok) => *)
+(*   fprint!(out, "IR0Echr(", tok, ")") *)
 | IR0Echr(tok) =>
   fprint!(out, "IR0Echr(", tok, ")")
+| IR0Eflt(tok) =>
+  fprint!(out, "IR0Eflt(", tok, ")")
 | IR0Estr(tok) =>
   fprint!(out, "IR0Estr(", tok, ")")
 //
@@ -321,6 +323,11 @@ x0.node() of
   , knd0, "; "
   , d2v0, "; ", farg, "; ", body, ")")
 //
+| IR0Etry(ire1, ircls) =>
+  fprint!
+  ( out
+  , "IR0Etry(", ire1, "; ", "...", ")")
+//
 | IR0Eaddr(ire1) =>
   (
     fprint!(out, "IR0Eaddr(", ire1, ")")
@@ -336,14 +343,20 @@ x0.node() of
   ( out
   , "IR0Eeval(", knd0, "; ", ire1, ")")
 //
+| IR0Eraise(ire1) =>
+  (
+  fprint!(out, "IR0Eraise(", ire1, ")")
+  )
+//
 | IR0Elazy(ire1) =>
   (
     fprint!(out, "IR0Elazy(", ire1, ")")
   )
-| IR0Ellazy(ire1, opt2) =>
+| IR0Ellazy
+  (ire1, ires(*frees*)) =>
   fprint!
   ( out
-  , "IR0Ellazy(", ire1, "; ", opt2, ")")
+  , "IR0Ellazy(", ire1, "; ", ires, ")")
 //
 | IR0Eflat(ire1) =>
   (

@@ -102,8 +102,11 @@ ir0val =
 | IR0Vnil of ()
 //
 | IR0Vint of int
+| IR0Vptr of ptr
+//
 | IR0Vbtf of bool
 | IR0Vchr of char
+//
 | IR0Vflt of double
 | IR0Vstr of string
 //
@@ -132,7 +135,9 @@ ir0val =
 | IR0Vfixs of (ir0env, d2var(*f*), ir0arglst, ir0exp, ir0explst)
 //
 | IR0Vlazy of ref(ir0lazval)
-| IR0Vllazy of (ir0env, ir0exp(*eval*), ir0expopt(*free*))
+| IR0Vllazy of
+  ( ir0env
+  , ir0exp(*eval*), ir0explst(*frees*))
 //
 | IR0Vnone0 of () | IR0Vnone1 of (ir0exp)
 //
@@ -186,6 +191,10 @@ overload fprint with fprint_ir0lftval
 //
 (* ****** ****** *)
 
+exception IR0EXN of ir0val
+
+(* ****** ****** *)
+
 absvtype intpenv_vtbox = ptr
 vtypedef intpenv = intpenv_vtbox
 
@@ -217,6 +226,13 @@ fun
 intpenv_pop0_let1(!intpenv): void
 fun
 intpenv_push_let1(!intpenv): void
+//
+(* ****** ****** *)
+//
+fun
+intpenv_pop0_try1(!intpenv): void
+fun
+intpenv_push_try1(!intpenv): void
 //
 (* ****** ****** *)
 //

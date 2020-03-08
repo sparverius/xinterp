@@ -333,9 +333,8 @@ d3e0.node() of
   ir0exp_make_node
   (loc0, IR0Ebtf(tok))
 | D3Echr(tok) =>
-  ir0exp_make_node(loc0, IR0Echr(tok))
-| D3Eflt(tok) =>
-  ir0exp_make_node(loc0, IR0Eflt(tok))
+  ir0exp_make_node
+  (loc0, IR0Echr(tok))
 | D3Estr(tok) =>
   ir0exp_make_node
   (loc0, IR0Estr(tok))
@@ -375,6 +374,9 @@ d3e0.node() of
     , IR0Etimp
       (ire1, targ, ircl, tsub))
   end
+//
+| D3Esap1
+  (d3e1, _) => irerase_dexp(d3e1)
 //
 | D3Edapp
   (d3f0, npf1, d3es) =>
@@ -533,6 +535,16 @@ d3e0.node() of
     end
   end
 //
+| D3Etry
+  (tok0, d3e1, d3cls) =>
+  let
+    val ire1 = irerase_dexp(d3e1)
+    val ircls = irerase_dclaulst(d3cls)
+  in
+    ir0exp_make_node
+    (loc0, IR0Etry(ire1, ircls))
+  end
+//
 | D3Eaddr(d3e1) =>
   let
     val ire1 = irerase_dexp(d3e1)
@@ -546,18 +558,25 @@ d3e0.node() of
     ir0exp_make_node(loc0, IR0Efold(ire1))
   end // end of [D3Eaddr]
 //
+| D3Eraise(d3e1) =>
+  let
+    val ire1 = irerase_dexp(d3e1)
+  in
+    ir0exp_make_node(loc0, IR0Eraise(ire1))
+  end // end of [D3Eraise]
+//
 | D3Elazy(d3e1) =>
   let
     val ire1 = irerase_dexp(d3e1)
   in
     ir0exp_make_node(loc0, IR0Elazy(ire1))
   end // end of [D3Elazy]
-| D3Ellazy(d3e1, opt2) =>
+| D3Ellazy(d3e1, d3es) =>
   let
     val ire1 = irerase_dexp(d3e1)
-    val opt2 = irerase_dexpopt(opt2)
+    val ires = irerase_dexplst(d3es)
   in
-    ir0exp_make_node(loc0, IR0Ellazy(ire1, opt2))
+    ir0exp_make_node(loc0, IR0Ellazy(ire1, ires))
   end // end of [D3Ellazy]
 //
 | D3Eflat(d3e1) =>

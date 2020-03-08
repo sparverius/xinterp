@@ -245,6 +245,7 @@ ir0exp_node =
 //
 | IR0Eint of (token)
 | IR0Ebtf of (token)
+| IR0Echr of (token)
 | IR0Estr of (token)
 | IR0Echr of (token)
 | IR0Eflt of (token)
@@ -299,23 +300,29 @@ ir0exp_node =
 | IR0Efix of
   (int(*knd*), d2var, ir0arglst, ir0exp)
 //
+| IR0Etry of (ir0exp, ir0claulst)
+//
 | IR0Eaddr of (ir0exp(*l-value*))
 | IR0Efold of (ir0exp(*l-value*))
 //
-| IR0Elazy of (ir0exp(* thunk *))
+| IR0Eraise of (ir0exp(*lin-exn*))
+//
+| IR0Elazy of
+  (ir0exp(*eval*))
 | IR0Ellazy of
-  (ir0exp(*eval*), ir0expopt(*free*))
+  (ir0exp(*eval*), ir0explst(*frees*))
 //
 | IR0Eflat of (ir0exp(*l-value*))
 | IR0Etalf of (ir0exp(*IR0Eflat*))
 //
 // HX-2019-12-18:
-// kind=0: undecided
-// kind=1: derefence
-// kind=2: lazy-eval
-// kind=3: llazy-eval
+// knd=0: undecided
+// knd=1: derefence
+// knd=2: lazy-eval
+// knd=3: llazy-eval
 | IR0Eeval of
-  (int(*kind*), ir0exp(*source*))
+    (int(*knd*), ir0exp(*source*))
+  // IR0Eeval
 //
 | IR0Enone0 of () | IR0Enone1 of d3exp
 //
