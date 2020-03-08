@@ -51,6 +51,8 @@ case+ x0 of
 //
 | IR0Vint(i0) =>
   jsonify("IR0Vint", jsonize(i0))
+| IR0Vptr(ptr) =>
+  jsonify("IR0Vptr", jsonize("...ptr..."))
 | IR0Vbtf(b0) =>
   jsonify("IR0Vbtf", jsonize(b0))
 | IR0Vchr(c0) =>

@@ -195,11 +195,15 @@ x0.node() of
   jsonify("IR0Elam", jsonize(knd0), jsonize(farg), jsonize(body))
 | IR0Efix(knd0, d2v0, farg, body) =>
   jsonify("IR0Efix", jsonize(knd0), jsonize(d2v0), jsonize(farg), jsonize(body))
+| IR0Etry(ir0exp, ir0claulst) =>
+  jsonify("IR0Etry", jsonize(ir0exp), jsonize(ir0claulst))
 //
 | IR0Eaddr(ire1) =>
   jsonify("IR0Eaddr", jsonize(ire1))
 | IR0Efold(ire1) =>
   jsonify("IR0Efold", jsonize(ire1))
+| IR0Eraise(ir0exp) =>
+  jsonify("IR0Eraise", jsonize(ir0exp))
 //
 | IR0Eeval
   (knd0, ire1) =>
