@@ -88,6 +88,12 @@ xatsopt_strunq
 ( source // "<string>" -> <string>
 : string) : string = "ext#xatsopt_strunq"
 //
+extern
+fun
+xatsopt_chrunq2
+( source // '<slashed>' -> <slashed>
+: string) : char = "ext#xatsopt_chrunq2"
+//
 (* ****** ****** *)
 //
 extern
@@ -105,6 +111,57 @@ in
 case- opt of ~Some_vt(idx2) => idx2
 end // end of [pcon_lab2idx]
 //
+(* ****** ****** *)
+local
+//
+fun
+auxget_at
+( irvs
+: ir0valist
+, i0: int): ir0val =
+(
+case- irvs of
+(*
+|
+list_nil
+() => IR0Verror()
+*)
+|
+list_cons
+(irv0, irvs) =>
+(
+if
+(i0 <= 0)
+then irv0
+else auxget_at(irvs, i0-1)
+)
+) (* end of [auxget_at] *)
+//
+in(* in-of-local *)
+//
+fun
+ir0val_con_arg
+( irv0
+: ir0val, i0: int): ir0val =
+(
+  auxget_at(irvs, i0)
+) where
+{
+val-IR0Vcon(d2c1, irvs) = irv0
+}
+//
+fun
+ir0val_tup_arg
+( irv0
+: ir0val, i0: int): ir0val =
+(
+  auxget_at(irvs, i0)
+) where
+{
+val-IR0Vtuple(knd0, irvs) = irv0
+}
+//
+end // end of [local]
 (* ****** ****** *)
 
 implement
@@ -259,8 +316,26 @@ case-
 tok.node() of
 | T_CHAR_char(rep) =>
   IR0Vchr(xatsopt_chrunq(rep))
+| T_CHAR_slash(rep) =>
+  IR0Vchr(xatsopt_chrunq2(rep))
 //
 end // end of [auxchr]
+
+fun
+auxflt
+( ire0
+: ir0exp): ir0val =
+let
+val-
+IR0Eflt(tok) = ire0.node()
+in(*in-of-let*)
+//
+case-
+tok.node() of
+| T_FLOAT1(rep) =>
+  IR0Vflt(g0string2float(rep))
+//
+end // end of [auxstr]
 
 fun
 auxstr
@@ -282,13 +357,13 @@ fun
 auxtop
 ( ire0
 : ir0exp): ir0val =
-(
-  IR0Vnil()
-) where
+(IR0Vnil()) where
 {
 val-
 IR0Etop(tok) = ire0.node()
 }
+
+(* ****** ****** *)
 
 fun
 auxvar
@@ -312,6 +387,8 @@ in
 case- opt of ~Some_vt(irv) => irv
 end // end of [auxvar]
 
+(* ****** ****** *)
+
 fun
 auxcon1
 ( env0
@@ -326,6 +403,24 @@ lam(arg) => IR0Vcon(d2c0, arg)
 val-IR0Econ1(d2c0) = ire0.node()
 }
 
+(* ****** ****** *)
+
+fun
+auxfcon
+( env0
+: !intpenv
+, ire0
+: ir0exp): ir0val =
+IR0Vfun
+(
+lam(arg) => IR0Vcon(d2c0, arg)
+) where
+{
+val-IR0Efcon(d2c0) = ire0.node()
+}
+
+(* ****** ****** *)
+
 fun
 auxfcst
 ( env0
@@ -339,6 +434,7 @@ val () =
 println!
 ("auxfcst: ire0 = ", ire0)
 // *)
+//
 val-
 IR0Efcst(d2c) = ire0.node()
 //
@@ -367,6 +463,22 @@ interp0_search_d2cst(env0, d2c)
 } (* end of [else] *)
 //
 end // end of [auxfcst]
+
+(* ****** ****** *)
+
+fun
+auxtcon
+( env0
+: !intpenv
+, ire0
+: ir0exp): ir0val =
+IR0Vfun
+(
+lam(arg) => IR0Vcon(d2c0, arg)
+) where
+{
+val-IR0Etcon(d2c0, _, _) = ire0.node()
+}
 
 (* ****** ****** *)
 
@@ -544,11 +656,13 @@ auxirfds
 : ir0fundeclist
 ) : ir0val =
 (
-case+
+case-
 irfds of
+(*
 |
 list_nil() =>
-IR0Vnone0()
+IR0Verror()
+*)
 |
 list_cons
 (irfd0, irfds) =>
@@ -675,6 +789,12 @@ irvs =
 auxdarg(env0, npf1, ires)
 //
 // (*
+//
+val loc0 = ire0.loc()
+//
+val () =
+println!
+("auxdapp: loc0 = ", loc0)
 val () =
 println!
 ("auxdapp: ire0 = ", ire0)
@@ -751,13 +871,15 @@ auxget_at
 : ir0valist
 , i0: int): ir0val =
 (
-case+ irvs of
+case-
+irvs of
+(*
 |
-list_nil() =>
-IR0Vnone0()
+list_nil
+() => IR0Verror()
+*)
 |
-list_cons
-(irv0, irvs) =>
+list_cons(irv0, irvs) =>
 (
 if
 (i0 <= 0)
@@ -922,9 +1044,17 @@ case+ ires of
   ("auxlst: irea = ", irea)
 *)
   val-
-  IR0Vnil() =
+  IR0Vnil() = irva where
+  {
+  val irva =
   interp0_irexp(env0, irea)
+(*
+  val ((*void*)) =
+  println!("auxlst: irva = ", irva)
+*)
   }
+//
+  } (* where *)
 ) (* end of [auxlst] *)
 val () =
   auxlst(env0, ires)
@@ -1013,13 +1143,15 @@ auxget_at
 : ir0valist
 , i0: int): ir0val =
 (
-case+ irvs of
+case-
+irvs of
+(*
 |
-list_nil() =>
-IR0Vnone0()
+list_nil
+() => IR0Verror()
+*)
 |
-list_cons
-(irv0, irvs) =>
+list_cons(irv0, irvs) =>
 (
 if
 (i0 <= 0)
@@ -1100,6 +1232,7 @@ aux_assgn
 , ire0
 : ir0exp): ir0val =
 let
+//
 val-
 IR0Eassgn
 ( irel
@@ -1110,6 +1243,17 @@ interp0_irexp(env0, irel)
 val
 irvr =
 interp0_irexp(env0, irer)
+//
+val () =
+println!
+("aux_assgn: ire0 = ", ire0)
+val () =
+println!
+("aux_assgn: irvl = ", irvl)
+val () =
+println!
+("aux_assgn: irvr = ", irvr)
+//
 in
 case- irvl of
 |
@@ -1119,18 +1263,18 @@ case+ irlv of
 |
 IR0LVref(r0) =>
 (
-  IR0Vnil((*void*))
+  IR0Vnil(*void*)
 ) where
 {
   val () =
-  (r0[] := Some(irvr))
+  ( r0[] := Some(irvr) )
 } (* end of [IR0LVref] *)
 |
 //
 IR0LVpcon
 (_, lab2) =>
 (
-  IR0Vnil((*void*))
+  IR0Vnil(*void*)
 ) where
 {
 val () =
@@ -1141,7 +1285,7 @@ aux_assgn_pcon(irvr, irlv)
 IR0LVpbox
 (_, _, _) =>
 (
-  IR0Vnil((*void*))
+  IR0Vnil(*void*)
 ) where
 {
 val () =
@@ -1151,13 +1295,23 @@ aux_assgn_pbox(irvr, irlv)
 IR0LVpflt
 (_, _, _) =>
 (
-  IR0Vnil((*void*))
+  IR0Vnil(*void*)
 ) where
 {
 val () =
 aux_assgn_pflt(irvr, irlv)
 }
 )
+|
+IR0Vptr(p0) =>
+(
+  IR0Vnil()
+) where
+{
+val () =
+$UN.ptr0_set<ir0val>(p0, irvr)
+}
+//
 end // end of [aux_assgn]
 //
 and
@@ -1315,21 +1469,33 @@ aux_if0
 , ire0
 : ir0exp): ir0val =
 let
+//
 val-
 IR0Eif0
 ( ire1
 , ire2
 , opt3) = ire0.node()
+//
 val
 irv1 =
 interp0_irexp(env0, ire1)
+//
+// (*
+val () =
+println!
+("aux_if0: ire1 = ", ire1)
+val () =
+println!
+("aux_if0: irv1 = ", irv1)
+// *)
+//
 in
 //
 case- irv1 of
 |
-IR0Vbtf(tf) =>
+IR0Vbtf(btf) =>
 if
-(tf)
+btf
 then
 interp0_irexp(env0, ire2)
 else
@@ -1351,9 +1517,11 @@ aux_case
 , ire0
 : ir0exp): ir0val =
 (
-case+ opt2 of
+case- opt2 of
+(*
 | ~None_vt() =>
-   IR0Vnone0((*void*))
+   IR0Verror((*void*))
+*)
 | ~Some_vt(irv2) => irv2
 ) where
 {
@@ -1364,9 +1532,25 @@ IR0Ecase
 , ire1
 , ircls) = ire0.node()
 //
+// (*
+//
+val loc0 = ire0.loc()
+//
+val () =
+println!("aux_case: loc0 = ", loc0)
+val () =
+println!("aux_case: ire0 = ", ire0)
+// *)
+//
 val
 irv1 =
 interp0_irexp(env0, ire1)
+//
+// (*
+val () =
+println!("aux_case: irv1 = ", irv1)
+// *)
+//
 val
 opt2 =
 interp0_irclaulst(env0, irv1, ircls)
@@ -1470,9 +1654,11 @@ opt2 =
 interp0_irclaulst(env0, irx1, ircls)
 prval ((*void*)) = $UN.cast2void(env0)
 in
-case+ opt2 of
+case- opt2 of
+(*
 | ~None_vt() =>
-   IR0Vnone0((*void*))
+   IR0Verror((*void*))
+*)
 | ~Some_vt(irv2) => irv2
 end
 //
@@ -1487,9 +1673,11 @@ aux_addr
 , ire0: ir0exp): ir0val =
 let
 //
+(*
 val () =
 println!
 ("aux_addr: ire0 = ", ire0)
+*)
 //
 val-
 IR0Eaddr(ire1) = ire0.node()
@@ -1521,17 +1709,6 @@ end
 //
 end // end of [aux_addr]
 //
-fun
-aux_fold
-( env0
-: !intpenv
-, ire0: ir0exp): ir0val =
-( IR0Vnil() ) where
-{
-val-
-IR0Efold(ire1) = ire0.node()
-}
-//
 (* ****** ****** *)
 
 fun
@@ -1541,6 +1718,8 @@ aux_eval
 , ire0: ir0exp): ir0val =
 let
 //
+val loc0 = ire0.loc()
+//
 val-
 IR0Eeval
 (knd0, ire1) = ire0.node()
@@ -1549,6 +1728,8 @@ val
 irv1 = interp0_irexp(env0, ire1)
 //
 // (*
+val () =
+println!("aux_eval: loc0 = ", loc0)
 val () =
 println!("aux_eval: ire1 = ", ire1)
 val () =
@@ -1560,7 +1741,12 @@ in
 case- irv1 of
 //
 | IR0Vlft
-  (irlv) => aux_eval_left(irlv)
+  (irlv) =>
+  aux_eval_left(irlv)
+//
+| IR0Vptr
+  (ptr0) =>
+  $UN.ptr0_get<ir0val>(ptr0)
 //
 | IR0Vlazy
   (ref0) => aux_eval_lazy(ref0)
@@ -1582,13 +1768,15 @@ auxget_at
 : ir0valist
 , i0: int): ir0val =
 (
-case+ irvs of
+case-
+irvs of
+(*
 |
-list_nil() =>
-IR0Vnone0()
+list_nil
+() => IR0Verror()
+*)
 |
-list_cons
-(irv0, irvs) =>
+list_cons(irv0, irvs) =>
 (
 if
 (i0 <= 0)
@@ -1680,6 +1868,29 @@ in
 end
 
 (* ****** ****** *)
+fun
+aux_fold
+( env0
+: !intpenv
+, ire0: ir0exp): ir0val =
+( IR0Vnil() ) where
+{
+val-
+IR0Efold(ire1) = ire0.node()
+}
+//
+fun
+aux_free
+( env0
+: !intpenv
+, ire0: ir0exp): ir0val =
+( IR0Vnil() ) where
+{
+val-
+IR0Efree(ire1) = ire0.node()
+}
+//
+(* ****** ****** *)
 
 fun
 aux_raise
@@ -1696,7 +1907,7 @@ irv1 = interp0_irexp(env0, ire1)
 in
 let
 val () =
-($raise IR0EXN(irv1)){void} in IR0Vnone0()
+($raise IR0EXN(irv1)){void} in IR0Verror()
 end
 end
 
@@ -1750,10 +1961,13 @@ auxget_at
 : ir0valist
 , i0: int): ir0val =
 (
-case+ irvs of
+case-
+irvs of
+(*
 |
-list_nil() =>
-IR0Vnone0()
+list_nil
+() => IR0Verror()
+*)
 |
 list_cons
 (irv0, irvs) =>
@@ -1832,12 +2046,22 @@ in
   val idx2 = pcon_lab2idx(lab2)
 }
 end // end of [IR0LVpcon]
+//
+|
+IR0LVpbox
+(irv1, lab2, idx2) =>
+(
+  auxget_at(irvs, idx2)
+) where
+{
+val-IR0Vtuple(knd0, irvs) = irv1
+} (* end of [IR0LVpbox] *)
+//
 (*
 |
-IR0LVpbox _ => // HX: can it happen?
-|
-IR0LVpflt _ => // HX: can it happen?
+IR0LVpflt _ => // can it happen?
 *)
+//
 ) (* end of [IR0Vlft] *)
 //
 end (* end of [IR0Evar] *)
@@ -1932,6 +2156,7 @@ ire0.node() of
 | IR0Ebtf _ => auxbtf(ire0)
 | IR0Echr _ => auxchr(ire0)
 //
+| IR0Eflt _ => auxflt(ire0)
 | IR0Estr _ => auxstr(ire0)
 //
 | IR0Etop _ => auxtop(ire0)
@@ -1940,11 +2165,14 @@ ire0.node() of
 //
 | IR0Econ1 _ => auxcon1(env0, ire0)
 //
+| IR0Efcon _ => auxfcon(env0, ire0)
 | IR0Efcst _ => auxfcst(env0, ire0)
 //
+| IR0Etcon _ => auxtcon(env0, ire0)
 (*
 | IR0Etcst _ => auxtcst(env0, ire0)
 *)
+//
 | IR0Etimp _ => auxtimp(env0, ire0)
 //
 | IR0Edapp _ => auxdapp(env0, ire0)
@@ -1985,9 +2213,11 @@ ire0.node() of
   // IR0Etry
 //
 | IR0Eaddr(ire1) => aux_addr(env0, ire0)
-| IR0Efold(ire1) => aux_fold(env0, ire0)
 //
 | IR0Eeval(_, _) => aux_eval(env0, ire0)
+//
+| IR0Efold(ire1) => aux_fold(env0, ire0)
+| IR0Efree(ire1) => aux_free(env0, ire0)
 //
 | IR0Eraise(ire1) => aux_raise(env0, ire0)
 //
@@ -1996,6 +2226,8 @@ ire0.node() of
 //
 | IR0Eflat(ire1) => aux_flat(env0, ire0)
 | IR0Etalf(ire1) => aux_talf(env0, ire0)
+//
+| IR0Enone0((*void*)) => IR0Vnil(*void*)
 //
 | _(* rest-of-ir0exp *) => IR0Vnone1(ire0)
 //
@@ -2070,33 +2302,40 @@ val env0 =
 intpenv_make_fenv(fenv)
 in
 let
-  val-
-  list_cons
-  (ira0, iras) = iras
-  val+
-  IR0ARGsome
-  (npf1, irps) = ira0
-  val
-  irps = auxnpf(npf1, irps)
-  val () =
-  interp0_irpatlst_ck1(env0, irps, irvs)
+//
+val-
+list_cons
+(ira0, iras) = iras
+val+
+IR0ARGsome
+(npf1, irps) = ira0
+//
+val
+irps = auxnpf(npf1, irps)
+//
+val () =
+interp0_irpatlst_ck1(env0, irps, irvs)
+//
+val irv0 =
+(
+case+ iras of
+|
+list_nil() =>
+( irv0 ) where
+{
   val irv0 =
-  (
-  case+ iras of
-  | list_nil() =>
-    ( irv0 ) where
-    {
-      val irv0 =
-      interp0_irexp_fun(env0, body)
-    }
-  | list_cons _ =>
-    (
-      IR0Vlam(fenv, iras, body)
-    ) where
-    {
-      val fenv = intpenv_take_fenv(env0)
-    }
-  ) : ir0val // end of [val]
+  interp0_irexp_fun(env0, body)
+}
+|
+list_cons _ =>
+(
+  IR0Vlam(fenv, iras, body)
+) where
+{
+  val fenv = intpenv_take_fenv(env0)
+}
+) : ir0val // end of [val]
+//
 in
   let
   val () = intpenv_free_fenv(env0) in irv0
@@ -2375,6 +2614,24 @@ case+ xs of
 
 (* ****** ****** *)
 
+fun
+interp0_d2con_ck0
+( d2c1
+: d2con
+, d2c2
+: d2con ) : bool =
+let
+  val tag1 = d2c1.tag((*void*))
+in
+  if
+  (tag1 < 0)
+  then (d2c1 = d2c2)
+  else (tag1 = d2c2.tag((*void*)))
+  // end of [if]
+end // end of [interp0_d2con_ck0]
+
+(* ****** ****** *)
+
 implement
 interp0_irpat_ck0
   (irp0, irv0) =
@@ -2399,20 +2656,29 @@ IR0Pany() => true
 IR0Pvar(d2v0) => true
 //
 |
-IR0Pflat(irp1) =>
+IR0Pbang
+( irp1 ) =>
 interp0_irpat_ck0(irp1, irv0)
 |
-IR0Pfree(irp1) =>
+IR0Pflat
+( irp1 ) =>
+interp0_irpat_ck0(irp1, irv0)
+|
+IR0Pfree
+( irp1 ) =>
 interp0_irpat_ck0(irp1, irv0)
 //
 |
-IR0Pcapp(d2c0, irps) =>
+IR0Pcapp
+(d2c0, irps) =>
 (
 case- irv0 of
 |
 IR0Vcon(d2c1, irvs) =>
 if
-d2c0=d2c1
+(
+interp0_d2con_ck0(d2c0, d2c1)
+)
 then
 interp0_irpatlst_ck0(irps, irvs)
 else false
@@ -2460,7 +2726,45 @@ end // end of [list_cons]
 (* ****** ****** *)
 
 fun
-ir0pat_leftize
+ir0pat_flatq
+(irp0: ir0pat) =
+(
+case+
+irp0.node() of
+//
+|
+IR0Pcapp
+(d2c0, irps) => auxlst(irps)
+//
+|
+IR0Ptuple
+(knd0, irps) =>
+if
+(knd0 != 0)
+then auxlst(irps) else false
+//
+| _ (* non-con-tup *) => false
+) where
+{
+fun
+auxlst
+( xs
+: ir0patlst): bool =
+(
+case+ xs of
+| list_nil() => false
+| list_cons(x0, xs) =>
+  (
+  case+ x0.node() of
+  | IR0Pbang _ => true | _ => auxlst(xs)
+  )
+)
+} (* end of [ir0pat_flatq] *)
+
+(* ****** ****** *)
+
+fun
+ir0pat_leftize0
 ( env0
 : !intpenv
 , irp1: ir0pat
@@ -2497,7 +2801,14 @@ interp0_insert_d2var
   val irv1 =
   IR0Vlft(IR0LVpcon(irv0, lab2))
 }
-| _(*non-IR0Pvar*) => ()
+|
+_(*non-IR0Pvar*) =>
+let
+val
+irv1 = ir0val_con_arg(irv0, i0)
+in
+interp0_irpat_ck1(env0, irp1, irv1)
+end
 )
 and
 auxirps
@@ -2517,12 +2828,180 @@ case+ irps of
     val () = auxirp1(env0, i0, irp1)
   }
 )
+} (* end of [ir0pat_leftize0] *)
+
+(* ****** ****** *)
+
+fun
+ir0pat_leftize1_con
+( env0
+: !intpenv
+, irp1: ir0pat
+, irv0: ir0val): void =
+(
+case+
+irp1.node() of
+|
+IR0Pcapp
+(d2c1, irps) =>
+auxirps(env0, 0(*index*), irps)
+|
+_ (*non-IR0Pcapp*) => ((*void*))
+) where
+{
+fun
+auxirp1
+( env0
+: !intpenv
+, i0: int
+, irp1: ir0pat): void =
+(
+case+
+irp1.node() of
+|
+IR0Pbang(irp2) =>
+(
+case+
+irp2.node() of
+|
+IR0Pvar(d2v1) =>
+(
+interp0_insert_d2var
+  (env0, d2v1, irv1)
+) where
+{
+  val lab2 =
+  label_make_int(i0)
+  val irv1 =
+  IR0Vlft(IR0LVpcon(irv0, lab2))
 }
+|
+_(*non-IR0Pvar*) =>
+let
+val
+irv1 = ir0val_con_arg(irv0, i0)
+in
+interp0_irpat_ck1(env0, irp1, irv1)
+end
+)
+|
+_(*non-IR0Pbang*) =>
+let
+val
+irv1 = ir0val_con_arg(irv0, i0)
+in
+interp0_irpat_ck1(env0, irp1, irv1)
+end
+)
+and
+auxirps
+( env0
+: !intpenv
+, i0: int
+, irps: ir0patlst): void =
+(
+case+ irps of
+| list_nil() => ()
+| list_cons
+  (irp1, irps) =>
+  (
+    auxirps(env0, i0+1, irps)
+  ) where
+  {
+    val () = auxirp1(env0, i0, irp1)
+  }
+)
+} (* end of [ir0pat_leftize1_con] *)
+
+(* ****** ****** *)
+
+fun
+ir0pat_leftize1_tup
+( env0
+: !intpenv
+, irp1: ir0pat
+, irv0: ir0val): void =
+(
+case+
+irp1.node() of
+|
+IR0Ptuple
+(knd0, irps) =>
+auxirps(env0, 0(*i0*), irps)
+|
+_ (*non-IR0Pcapp*) => ((*void*))
+) where
+{
+fun
+auxirp1
+( env0
+: !intpenv
+, i0: int
+, irp1: ir0pat): void =
+(
+case+
+irp1.node() of
+|
+IR0Pbang(irp2) =>
+(
+case+
+irp2.node() of
+|
+IR0Pvar(d2v1) =>
+(
+interp0_insert_d2var
+  (env0, d2v1, irv1)
+) where
+{
+val lab2 =
+label_make_int(i0)
+val irv1 =
+IR0Vlft(IR0LVpbox(irv0, lab2, i0))
+}
+|
+_(*non-IR0Pvar*) =>
+let
+val
+irv1 = ir0val_tup_arg(irv0, i0)
+in
+interp0_irpat_ck1(env0, irp1, irv1)
+end
+)
+|
+_(*non-IR0Pbang*) =>
+let
+val
+irv1 = ir0val_tup_arg(irv0, i0)
+in
+interp0_irpat_ck1(env0, irp1, irv1)
+end
+)
+and
+auxirps
+( env0
+: !intpenv
+, i0: int
+, irps: ir0patlst): void =
+(
+case+ irps of
+| list_nil() => ()
+| list_cons
+  (irp1, irps) =>
+  (
+    auxirps(env0, i0+1, irps)
+  ) where
+  {
+    val () = auxirp1(env0, i0, irp1)
+  }
+)
+} (* end of [ir0pat_leftize1_tup] *)
+
+(* ****** ****** *)
 
 implement
 interp0_irpat_ck1
-  (env0, irp0, irv0) =
-let
+( env0
+, irp0, irv0 ) = let
 //
 (*
 val () =
@@ -2556,13 +3035,16 @@ interp0_insert_d2var
 //
 |
 IR0Pflat(irp1) =>
-let
+(
+ir0pat_leftize0(env0, irp1, irv0)
+) where
+{
 val () =
-interp0_irpat_ck1
-(env0, irp1, irv0)
-in
-  ir0pat_leftize(env0, irp1, irv0)
-end
+interp0_irpat_ck1(env0, irp1, irv0)
+}
+|
+IR0Pbang(irp1) =>
+interp0_irpat_ck1(env0, irp1, irv0)
 |
 IR0Pfree(irp1) =>
 interp0_irpat_ck1(env0, irp1, irv0)
@@ -2570,14 +3052,42 @@ interp0_irpat_ck1(env0, irp1, irv0)
 |
 IR0Pcapp(d2c0, irps) =>
 (
+let
+val
+test =
+ir0pat_flatq(irp0)
+in
+if
+test
+then
+(
+ir0pat_leftize1_con(env0, irp0, irv0)
+)
+else
+(
 case- irv0 of
 |
 IR0Vcon(d2c1, irvs) =>
 interp0_irpatlst_ck1(env0, irps, irvs)
 )
+end // end of [let]
+)
 //
 |
 IR0Ptuple(knd0, irps) =>
+(
+let
+val
+test =
+ir0pat_flatq(irp0)
+in
+if
+test
+then
+(
+ir0pat_leftize1_tup(env0, irp0, irv0)
+)
+else
 (
 case- irv0 of
 |
@@ -2586,6 +3096,8 @@ let
 val () = assertloc(knd0 = knd1)
 in
 interp0_irpatlst_ck1(env0, irps, irvs)
+end
+)
 end
 )
 //
@@ -2700,6 +3212,7 @@ implement
 interp0_irclau
 (env0, irv0, ircl) =
 let
+//
 (*
 val () =
 println!
@@ -2708,6 +3221,7 @@ val () =
 println!
 ("interp0_irclau: ircl = ", ircl)
 *)
+//
 in
 //
 case+
@@ -2724,7 +3238,7 @@ val opt0 =
   if
   test
   then
-  Some_vt(IR0Vnone0()) else None_vt()
+  Some_vt(IR0Verror()) else None_vt()
 ) : Option_vt(ir0val)
 in
 let
@@ -3214,8 +3728,9 @@ let
 val-
 IR0Cimpdecl3
 ( knd, mopt
-, sqas, tqas, id2c
-, ti3a, ti2s, iras, body) = irdcl.node()
+, sqas, tqas
+, id2c, ti3a
+, ti2s, iras, body) = irdcl.node()
 //
 (*
 val () =
@@ -3335,10 +3850,14 @@ fprint_val<ir0val> = fprint_ir0val
 //
 extern
 fun
+(*
+(*
 <<<<<<< HEAD
 xatsopt_strunq(source(* "<string>" -> <string> *): string) : string =
   "ext#xatsopt_strunq"
 =======
+*)
+*)
 xatsopt_chrunq
 ( source // '<char>' -> <char>
 : string) : char = "ext#xatsopt_chrunq"
@@ -3347,7 +3866,6 @@ fun
 xatsopt_strunq
 ( source // "<string>" -> <string>
 : string) : string = "ext#xatsopt_strunq"
->>>>>>> aec869625333b1cd6d016661243dfb6aece6519b
 //
 (* ****** ****** *)
 //
@@ -3479,8 +3997,6 @@ auxbtf(ire0: ir0exp): ir0val =
     end
 end // end of [auxbtf]
 
-<<<<<<< HEAD
-=======
 fun
 auxchr
 ( ire0
@@ -3512,7 +4028,6 @@ tok.node() of
   IR0Vstr(xatsopt_strunq(rep))
 //
 end // end of [auxstr]
->>>>>>> aec869625333b1cd6d016661243dfb6aece6519b
 
 fun
 auxstr(ire0: ir0exp): ir0val =
@@ -3532,6 +4047,7 @@ fun getchr(x: string): char =
     g0ofg1(string_get_at(g1, 1))
   end
 
+(*
 <<<<<<< HEAD
 
 fun remove_delim(x: string): [n: int] strnptr(n) =
@@ -3585,6 +4101,7 @@ fun getchr_slash(x: string): char = res
     ) : char
   end
 =======
+*)
 fun
 auxfcst
 ( env0
@@ -3626,11 +4143,9 @@ interp0_search_d2cst(env0, d2c)
 } (* end of [else] *)
 //
 end // end of [auxfcst]
->>>>>>> aec869625333b1cd6d016661243dfb6aece6519b
+(* >>>>>>> aec869625333b1cd6d016661243dfb6aece6519b *)
 
 
-<<<<<<< HEAD
-=======
 fun
 auxtimp
 ( env0
@@ -3754,7 +4269,6 @@ in
 list_cons(ire1, auxfixs(irfds))
 end // end of [IR0Elam]
 //
->>>>>>> aec869625333b1cd6d016661243dfb6aece6519b
 (*
 (
     (* case- x of *)
@@ -4356,6 +4870,7 @@ aux_if0(env0: !intpenv, ire0: ir0exp): ir0val =
 (* ****** ****** *)
 
 fun
+(*
 <<<<<<< HEAD
 aux_case(env0: !intpenv, ire0: ir0exp): ir0val =
   (case+ opt2 of
@@ -4368,6 +4883,7 @@ aux_case(env0: !intpenv, ire0: ir0exp): ir0val =
     val opt2 = interp0_irclaulst(env0, irv1, ircls)
   end (* end of [aux_case] *)
 =======
+*)
 aux_case
 ( env0
 : !intpenv
@@ -4395,7 +4911,7 @@ opt2 =
 interp0_irclaulst(env0, irv1, ircls)
 //
 } (* end of [aux_case] *)
->>>>>>> aec869625333b1cd6d016661243dfb6aece6519b
+(* >>>>>>> aec869625333b1cd6d016661243dfb6aece6519b *)
 
 (* ****** ****** *)
 
@@ -4481,6 +4997,7 @@ end (* end of [aux_try] *)
 (* ****** ****** *)
 //
 fun
+(*
 <<<<<<< HEAD
 aux_addr(env0: !intpenv, ire0: ir0exp): ir0val =
   let
@@ -4491,6 +5008,7 @@ aux_addr(env0: !intpenv, ire0: ir0exp): ir0val =
   end // end of [aux_addr]
 
 =======
+*)
 aux_addr
 ( env0
 : !intpenv
@@ -4531,7 +5049,7 @@ end
 //
 end // end of [aux_addr]
 //
->>>>>>> aec869625333b1cd6d016661243dfb6aece6519b
+(* >>>>>>> aec869625333b1cd6d016661243dfb6aece6519b *)
 fun
 aux_fold(env0: !intpenv, ire0: ir0exp): ir0val = (IR0Vnil())
   where
@@ -4541,6 +5059,7 @@ aux_fold(env0: !intpenv, ire0: ir0exp): ir0val = (IR0Vnil())
 (* ****** ****** *)
 
 fun
+(*
 <<<<<<< HEAD
 aux_eval(env0: !intpenv, ire0: ir0exp): ir0val =
   let
@@ -4561,6 +5080,7 @@ aux_eval(env0: !intpenv, ire0: ir0exp): ir0val =
 and
 aux_eval_left(x0: ir0lftval): ir0val =
 =======
+*)
 aux_eval
 ( env0
 : !intpenv
@@ -4683,7 +5203,7 @@ let
   interp0_irexp_fun(env0, ire2)
 in
   r0[] := IR0LVval(irv2);
->>>>>>> aec869625333b1cd6d016661243dfb6aece6519b
+(* >>>>>>> aec869625333b1cd6d016661243dfb6aece6519b *)
   let
     fun
     auxget_at(irvs: ir0valist, i0: int): ir0val =
@@ -4718,6 +5238,7 @@ in
   end (* end of [aux_eval_left] *)
 
 and
+(*
 <<<<<<< HEAD
 aux_eval_lazy(r0: ref(ir0lazval)): ir0val =
   (case+ r0[] of
@@ -4739,6 +5260,7 @@ aux_eval_lazy(r0: ref(ir0lazval)): ir0val =
 and
 aux_eval_llazy(fenv: ir0env, ire1: ir0exp, opt2: ir0expopt): ir0val =
 =======
+*)
 aux_eval_llazy
 ( fenv: ir0env
 , ire1: ir0exp
@@ -4749,7 +5271,6 @@ let
   val
   irv1 = interp0_irexp_fun(env0, ire1)
 in
->>>>>>> aec869625333b1cd6d016661243dfb6aece6519b
   let
     val env0 = intpenv_make_fenv(fenv)
     val irv1 = interp0_irexp(env0, ire1)
@@ -4830,6 +5351,7 @@ aux_flat(env0: !intpenv, ire0: ir0exp): ir0val =
   end
 
 and
+(*
 <<<<<<< HEAD
 aux_flat_main(env0: !intpenv, ire0: ir0exp): ir0val =
   (case- ire0.node() of
@@ -4870,6 +5392,7 @@ aux_flat_main(env0: !intpenv, ire0: ir0exp): ir0val =
       end
   ) (* end of [aux_flat_main] *)
 =======
+*)
 aux_flat_main
 ( env0
 : !intpenv
@@ -4940,7 +5463,7 @@ case- irv1 of
   (knd, irvs) => auxget_at(irvs, idx2)
 end
 ) (* end of [aux_flat_main] *)
->>>>>>> aec869625333b1cd6d016661243dfb6aece6519b
+(* >>>>>>> aec869625333b1cd6d016661243dfb6aece6519b *)
 
 end // end of [local]
 
@@ -4948,6 +5471,7 @@ end // end of [local]
 
 fun
 aux_talf
+(*
 <<<<<<< HEAD
 (env0: !intpenv, ire0: ir0exp): ir0val =
   let
@@ -4978,6 +5502,7 @@ aux_talf
         end // end of [IR0Eeval]
   end // end of [aux_talf]
 =======
+*)
 ( env0
 : !intpenv
 , ire0
@@ -5026,13 +5551,14 @@ assertloc(knd0=1) in interp0_irexp(env0, ire1)
 end // end of [IR0Eeval]
 //
 end // end of [aux_talf]
->>>>>>> aec869625333b1cd6d016661243dfb6aece6519b
+(* >>>>>>> aec869625333b1cd6d016661243dfb6aece6519b *)
 
 (* ****** ****** *)
 
 in (* in-of-local *)
 
 implement
+(*
 <<<<<<< HEAD
 interp0_irexp(env0, ire0) =
   let
@@ -5100,6 +5626,7 @@ interp0_irexp(env0, ire0) =
       //
   end // end of [interp0_irexp]
 =======
+*)
 interp0_irexp
   (env0, ire0) =
 let
@@ -5187,7 +5714,7 @@ ire0.node() of
 | _(* rest-of-ir0exp *) => IR0Vnone1(ire0)
 //
 end // end of [interp0_irexp]
->>>>>>> aec869625333b1cd6d016661243dfb6aece6519b
+(* >>>>>>> aec869625333b1cd6d016661243dfb6aece6519b *)
 
 end // end of [local]
 
@@ -5236,9 +5763,11 @@ auxnpf(npf1: int, irps: ir0patlst): ir0patlst =
 in(*in-of-local*)
 
 implement
+(*
 <<<<<<< HEAD
 interp0_fcall_lam(irf0, irvs) =
 =======
+*)
 interp0_fcall_lam
   (irf0, irvs) =
 let
@@ -5278,7 +5807,7 @@ let
     }
   ) : ir0val // end of [val]
 in
->>>>>>> aec869625333b1cd6d016661243dfb6aece6519b
+(* >>>>>>> aec869625333b1cd6d016661243dfb6aece6519b *)
   let
     val-IR0Vlam(fenv, iras, body) = irf0
     val env0 = intpenv_make_fenv(fenv)
@@ -5309,9 +5838,11 @@ end // end of [interp0_fcall_lam]
 (* ****** ****** *)
 
 implement
+(*
 <<<<<<< HEAD
 interp0_fcall_fix(irf0, irvs) =
 =======
+*)
 interp0_fcall_fix
   (irf0, irvs) =
 let
@@ -5354,7 +5885,7 @@ let
     }
   ) : ir0val // end of [val]
 in
->>>>>>> aec869625333b1cd6d016661243dfb6aece6519b
+(* >>>>>>> aec869625333b1cd6d016661243dfb6aece6519b *)
   let
     val-IR0Vfix(fenv, d2v0, iras, body) = irf0
     val env0 = intpenv_make_fenv(fenv)
@@ -5385,9 +5916,11 @@ in
 (* ****** ****** *)
 
 implement
+(*
 <<<<<<< HEAD
 interp0_fcall_fixs(irf0, irvs) =
 =======
+*)
 interp0_fcall_fixs
   (irf0, irvs) =
 let
@@ -5433,7 +5966,7 @@ let
     }
   ) : ir0val // end of [val]
 in
->>>>>>> aec869625333b1cd6d016661243dfb6aece6519b
+(* >>>>>>> aec869625333b1cd6d016661243dfb6aece6519b *)
   let
     val-IR0Vfixs(fenv, d2v0, iras, body, irdfs) = irf0
     val env0 = intpenv_make_fenv(fenv)
@@ -5742,9 +6275,11 @@ interp0_irgualst_ck2(env0, irgs) =
 (* ****** ****** *)
 
 implement
+(*
 <<<<<<< HEAD
 interp0_irclau(env0, irv0, ircl) =
 =======
+*)
 interp0_irclau
 (env0, irv0, ircl) =
 let
@@ -5804,7 +6339,7 @@ else
 )
 ) : Option_vt(ir0val)
 in
->>>>>>> aec869625333b1cd6d016661243dfb6aece6519b
+(* >>>>>>> aec869625333b1cd6d016661243dfb6aece6519b *)
   let
     (*
     val () = println!("interp0_irclau: irv0 = ", irv0)

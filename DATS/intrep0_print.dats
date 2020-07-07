@@ -147,6 +147,8 @@ case+ x0.node() of
 | IR0Pvar(d2v) =>
   fprint!(out, "IR0Pvar(", d2v, ")")
 //
+| IR0Pbang(irp1) =>
+  fprint!(out, "IR0Pbang(", irp1, ")")
 | IR0Pflat(irp1) =>
   fprint!(out, "IR0Pflat(", irp1, ")")
 | IR0Pfree(irp1) =>
@@ -235,15 +237,24 @@ x0.node() of
 | IR0Ecst1(d2c) =>
   fprint!(out, "IR0Ecst1(", d2c, ")")
 //
+| IR0Efcon(d2c) =>
+  fprint!(out, "IR0Efcon(", d2c, ")")
 | IR0Efcst(d2c) =>
   fprint!(out, "IR0Efcst(", d2c, ")")
 //
+| IR0Etcon
+  (d2c1, ti3a, ti2s) =>
+  fprint!
+  ( out
+  , "IR0Etcon("
+  , d2c1, "; ", ti3a, "; ", ti2s, ")")
 | IR0Etcst
   (d2c1, ti3a, ti2s) =>
   fprint!
   ( out
   , "IR0Etcst("
   , d2c1, "; ", ti3a, "; ", ti2s, ")")
+//
 | IR0Etimp
   ( ire1
   , targ, irc2, tsub) =>
@@ -332,20 +343,24 @@ x0.node() of
   (
     fprint!(out, "IR0Eaddr(", ire1, ")")
   )
-| IR0Efold(ire1) =>
-  (
-    fprint!(out, "IR0Efold(", ire1, ")")
-  )
-//
 | IR0Eeval
   (knd0, ire1) =>
   fprint!
   ( out
   , "IR0Eeval(", knd0, "; ", ire1, ")")
 //
+| IR0Efold(ire1) =>
+  (
+    fprint!(out, "IR0Efold(", ire1, ")")
+  )
+| IR0Efree(ire1) =>
+  (
+    fprint!(out, "IR0Efree(", ire1, ")")
+  )
+//
 | IR0Eraise(ire1) =>
   (
-  fprint!(out, "IR0Eraise(", ire1, ")")
+    fprint!(out, "IR0Eraise(", ire1, ")")
   )
 //
 | IR0Elazy(ire1) =>

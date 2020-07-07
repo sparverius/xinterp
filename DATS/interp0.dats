@@ -359,14 +359,43 @@ the_preludes_load
   XATSHOME: string
 ) : void =
   "ext#libxatsopt_the_preludes_load"
-extern
+//
+(* ****** ****** *)
+
 fun
 the_preludes_load_if
+( XHOME
+: string, flag: &(int)) : void =
 (
-  XATSHOME: string, flag: &int
-) : void =
-  "ext#libxatsopt_the_preludes_load_if"
 //
+if
+(flag = 0)
+then
+{
+val () =
+(flag := flag + 1)
+val () =
+the_preludes_load(XHOME)
+//
+(*
+HX-2020-03-08:
+The runtime for primitive functions
+*)
+//
+val () =
+the_prelude_load
+( XHOME
+, 1(*dynamic*)
+, "prelude/DATS/CATS/Xint/runtime.dats")
+val () =
+the_prelude_load
+( XHOME
+, 1(*dynamic*)
+, "xatslib/libc/DATS/CATS/Xint/runtime.dats")
+//
+} (* end of [then] *) // end-of-if
+) (* end of [the_preludes_load_if] *)
+
 (* ****** ****** *)
 //
 datatype
@@ -749,7 +778,8 @@ val
 $FP0.the_filpathlst_pout(pf0 | (*none*))
 *)
 //
-val () = synread_main(d0cs)
+val () =
+synread_program(d0cs)
 //
 (*
 val () =
@@ -765,7 +795,7 @@ d1cs = trans01_declist(d0cs)
 in
 d1cs where
 {
-  val () = tread01_main(d1cs)
+val () = tread01_program(d1cs)
 }
 end // end of [val]
 (*
@@ -782,7 +812,7 @@ d2cs = trans12_declist(d1cs)
 in
 d2cs where
 {
-  val () = tread12_main(d2cs)
+val () = tread12_program(d2cs)
 }
 end // end of [val]
 (*
@@ -799,9 +829,7 @@ d3cs = trans23_declist(d2cs)
 in
 d3cs where
 {
-(*
-  val () = tread23_main(d3cs)
-*)
+val () = tread23_program(d3cs)
 }
 end // end of [val]
 (*
@@ -814,11 +842,11 @@ val
 d3cs =
 let
 val
-d3cs = trans33_declist(d3cs)
+d3cs = trans33_program(d3cs)
 in
 d3cs where
 {
-  val () = tread33_main(d3cs)
+val () = tread33_program(d3cs)
 }
 end // end of [val]
 (*
@@ -828,7 +856,17 @@ println!
 *)
 //
 val
+d3cs =
+let
+val
 d3cs = trans3t_program(d3cs)
+val
+d3cs = trans3x_program(d3cs)
+in
+let
+val () = tread3x_program(d3cs) in d3cs
+end
+end // end of [val]
 (*
 val () =
 println!
@@ -1298,9 +1336,9 @@ val+
 list_cons
 (arg0, args) = args where
 {
-  val
-  args =
-  parse_commarglst(argc, argv)
+  val args =
+    parse_commarglst(argc, argv)
+  // end of [val]
 } (* end of [val] *)
 //
 var
@@ -1327,8 +1365,7 @@ st0: cmdstate =
 //
 } (* end of [var] *)
 //
-val () =
-process_cmdline(st0, args)
+val () = process_cmdline(st0, args)
 //
 in
 //

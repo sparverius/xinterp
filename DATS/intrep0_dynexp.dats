@@ -55,6 +55,26 @@ UN = "prelude/SATS/unsafe.sats"
 local
 
 fun
+auxbang
+( d3p0
+: d3pat): ir0pat =
+let
+//
+val
+loc0 = d3p0.loc()
+//
+val-
+D3Pbang
+(d3p1) = d3p0.node()
+//
+val
+irp1 = irerase_dpat(d3p1)
+//
+in
+ir0pat_make_node(loc0, IR0Pbang(irp1))
+end // end of [auxbang]
+
+fun
 auxflat
 ( d3p0
 : d3pat): ir0pat =
@@ -102,20 +122,22 @@ auxdapp
 : d3pat): ir0pat =
 let
 //
-val () =
-println!
-("\
-auxdapp: \
-d3p0 = ", d3p0)
-//
 val
 loc0 = d3p0.loc()
+//
+(*
+val () =
+println!
+("auxdapp: loc0 = ", loc0)
+val () =
+println!
+("auxdapp: d3p0 = ", d3p0)
+*)
 //
 val-
 D3Pdapp
 ( d3f0
-, npf1
-, d3ps) = d3p0.node()
+, npf1, d3ps) = d3p0.node()
 //
 val d3ps =
 (
@@ -241,6 +263,7 @@ d3p0.node() of
 | D3Pvar(d2v) =>
   ir0pat_make_node(loc0, IR0Pvar(d2v))
 //
+| D3Pbang _ => auxbang(d3p0)
 | D3Pflat _ => auxflat(d3p0)
 | D3Pfree _ => auxfree(d3p0)
 //
@@ -335,6 +358,9 @@ d3e0.node() of
 | D3Echr(tok) =>
   ir0exp_make_node
   (loc0, IR0Echr(tok))
+| D3Eflt(tok) =>
+  ir0exp_make_node
+  (loc0, IR0Eflt(tok))
 | D3Estr(tok) =>
   ir0exp_make_node
   (loc0, IR0Estr(tok))
@@ -346,6 +372,11 @@ d3e0.node() of
 | D3Evar(d2v) =>
   ir0exp_make_node
   (loc0, IR0Evar(d2v))
+| D3Evknd
+  ( knd, d2v ) =>
+  ir0exp_make_node
+  (loc0, IR0Evar(d2v))
+//
 | D3Econ1(d2c) =>
   ir0exp_make_node
   (loc0, IR0Econ1(d2c))
@@ -353,15 +384,24 @@ d3e0.node() of
   ir0exp_make_node
   (loc0, IR0Ecst1(d2c))
 //
+| D3Efcon(d2c) =>
+  ir0exp_make_node
+  (loc0, IR0Efcon(d2c))
 | D3Efcst(d2c) =>
   ir0exp_make_node
   (loc0, IR0Efcst(d2c))
 //
+| D3Etcon
+  (d2c1, ti3a, ti2s) =>
+  ir0exp_make_node
+  ( loc0
+  , IR0Etcon(d2c1, ti3a, ti2s))
 | D3Etcst
   (d2c1, ti3a, ti2s) =>
   ir0exp_make_node
   ( loc0
   , IR0Etcst(d2c1, ti3a, ti2s))
+//
 | D3Etimp
   ( d3e1(*tcst*), targ
   , d3cl(*impl*), tsub) =>
@@ -375,6 +415,8 @@ d3e0.node() of
       (ire1, targ, ircl, tsub))
   end
 //
+| D3Esap0
+  (d3e1, _) => irerase_dexp(d3e1)
 | D3Esap1
   (d3e1, _) => irerase_dexp(d3e1)
 //
@@ -551,12 +593,27 @@ d3e0.node() of
   in
     ir0exp_make_node(loc0, IR0Eaddr(ire1))
   end // end of [D3Eaddr]
+//
+| D3Eeval
+  ( knd0, d3e1 ) =>
+  let
+    val ire1 = irerase_dexp(d3e1)
+  in
+    ir0exp_make_node(loc0, IR0Eeval(knd0, ire1))
+  end // end of [D3Eeval]
+//
 | D3Efold(d3e1) =>
   let
     val ire1 = irerase_dexp(d3e1)
   in
     ir0exp_make_node(loc0, IR0Efold(ire1))
-  end // end of [D3Eaddr]
+  end // end of [D3Efold]
+| D3Efree(d3e1) =>
+  let
+    val ire1 = irerase_dexp(d3e1)
+  in
+    ir0exp_make_node(loc0, IR0Efree(ire1))
+  end // end of [D3Efree]
 //
 | D3Eraise(d3e1) =>
   let
@@ -592,13 +649,14 @@ d3e0.node() of
     ir0exp_make_node(loc0, IR0Etalf(ire1))
   end // end of [D3Etalf]
 //
-| D3Eeval
-  ( knd0, d3e1 ) =>
-  let
-    val ire1 = irerase_dexp(d3e1)
-  in
-    ir0exp_make_node(loc0, IR0Eeval(knd0, ire1))
-  end // end of [D3Eeval]
+| D3Eanno
+  ( d3e1, s2e2 ) => irerase_dexp(d3e1)
+  // end of [D3Eanno]
+//
+| D3Enone0((*void*)) =>
+  (
+    ir0exp_make_node(loc0, IR0Enone0())
+  )
 //
 | _(*rest-of-d3exp*) =>
   (

@@ -17,6 +17,9 @@
 (* ****** ****** *)
 //
 #staload
+"{$XANADU}/SATS/locinfo.sats"
+//
+#staload
 "{$XANADU}/SATS/filsrch.sats"
 //
 (* ****** ****** *)
@@ -50,6 +53,8 @@
 //
 #staload
 "{$XANADU}/SATS/trans23.sats"
+#staload
+"{$XANADU}/SATS/tread23.sats"
 //
 #staload
 "{$XANADU}/SATS/trans33.sats"
@@ -58,6 +63,11 @@
 //
 #staload
 "{$XANADU}/SATS/trans3t.sats"
+//
+#staload
+"{$XANADU}/SATS/trans3x.sats"
+#staload
+"{$XANADU}/SATS/tread3x.sats"
 //
 (* ****** ****** *)
 //
@@ -129,5 +139,4 @@ _(*TMP*) =
 (* ****** ****** *)
 
 #endif
-
 (* end of [libxatsopt.hats] *)
